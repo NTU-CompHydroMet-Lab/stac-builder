@@ -65,13 +65,23 @@ def update_root_catalog(
         lambda: {"event_map": defaultdict(list), "plain": []}
     )
 
-    loaded_cols: list[pystac.Collection] = []
+    # When the pipeline reuses an output directory across runs, the same
+    # collection id can appear at two paths: the flat <output>/<id>/ that
+    # per-source generators always emit, and the nested
+    # <output>/<group>/<id>/ where a previous run moved it. Keep only the
+    # deepest path per id — the nested copy is the canonical location,
+    # and the move below will overwrite it from the flat path.
+    by_id: dict[str, pystac.Collection] = {}
     for col_path in collection_paths:
         try:
             col = pystac.Collection.from_file(str(col_path))
-            loaded_cols.append(col)
         except Exception as e:
             logger.warning(f"Failed to load collection {col_path}: {e}")
+            continue
+        existing = by_id.get(col.id)
+        if existing is None or len(Path(col.self_href).parts) > len(Path(existing.self_href).parts):
+            by_id[col.id] = col
+    loaded_cols: list[pystac.Collection] = list(by_id.values())
 
     aggregated_ids = {
         c.id for c in loaded_cols if c.extra_fields.get("aggregation_type") == "event_collection"
