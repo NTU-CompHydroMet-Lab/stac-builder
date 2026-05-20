@@ -26,6 +26,25 @@ import cf_xarray
 from .base import StacGenerator
 
 
+def normalize_urlpath_to_single(urlpath: Any) -> str | None:
+    """Reduce an Intake ``urlpath`` (string, list, None) to one representative path.
+
+    Multi-file zarr/netcdf sources commonly declare ``urlpath`` as a YAML list
+    (one entry per year, etc.). For recording a single ``source_path`` and
+    building one data-asset symlink per STAC item, we collapse that down to the
+    first usable entry. Glob strings pass through unchanged — intake handles
+    them downstream.
+    """
+    if urlpath is None:
+        return None
+    if isinstance(urlpath, (list, tuple)):
+        if not urlpath:
+            return None
+        return str(urlpath[0])
+    text = str(urlpath)
+    return text or None
+
+
 class IntakeXarrayGenerator(StacGenerator):
     """Generator for Intake-Xarray sources (NetCDF, Zarr).
 
@@ -164,16 +183,22 @@ class IntakeXarrayGenerator(StacGenerator):
         return hasattr(obj, "columns") and (hasattr(obj, "compute") or hasattr(obj, "to_pandas") or hasattr(obj, "to_dict"))
 
     def _extract_source_path(self, source: Any) -> str | None:
-        """Best-effort extraction of underlying source filepath from Intake entry."""
+        """Best-effort extraction of underlying source filepath from Intake entry.
+
+        ``urlpath`` may be a string, a list (one entry per year/month), or a
+        glob. ``normalize_urlpath_to_single`` picks the first concrete path
+        when given a list, so this never round-trips a list-repr through Path.
+        """
         entry = getattr(source, "_entry", None)
         if entry is None:
             return None
         kwargs = getattr(entry, "_captured_init_kwargs", {}) or {}
         args = kwargs.get("args", {}) if isinstance(kwargs, dict) else {}
         urlpath = args.get("urlpath") if isinstance(args, dict) else None
-        if not urlpath:
+        single = normalize_urlpath_to_single(urlpath)
+        if not single:
             return None
-        path = Path(str(urlpath)).expanduser()
+        path = Path(single).expanduser()
         if not path.is_absolute():
             path = path.resolve()
         return str(path)
