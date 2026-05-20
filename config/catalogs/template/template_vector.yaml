@@ -1,0 +1,48 @@
+metadata:
+  version: 1
+  description: "Lab Data Catalog Template (Shapefile / GeoParquet)"
+  generator: vector
+
+sources:
+  # -------------------------------------------------------------------------
+  # [TEMPLATE] Vector dataset entry
+  # The single source produces a one-item Collection whose item footprint is
+  # the actual feature union, reprojected to EPSG:4326.
+  # -------------------------------------------------------------------------
+  my_vector_dataset:
+    description: "Short description of the vector dataset (e.g. AOI / slope unit boundaries)"
+    driver: vector
+
+    args:
+      # Path to a Shapefile (.shp) or GeoParquet (.parquet).
+      urlpath: "/path/to/boundaries/AOI.shp"
+
+      # If true (default) and the source is a Shapefile, convert to GeoParquet
+      # alongside the items/ directory before writing the STAC asset.
+      convert_to_parquet: true
+
+    metadata:
+      id: "my_vector_dataset_v1"
+      title: "Area of Interest Boundaries"
+      description: |
+        Vector boundaries used as the area of interest for downstream raster
+        analysis. Stored as GeoParquet, preserving the original CRS.
+      keywords: ["AOI", "boundary", "vector"]
+      license: "proprietary"
+
+      # Optional capture datetime (ISO 8601). Defaults to now.
+      datetime: "2025-08-25T00:00:00Z"
+
+      processing_level: "Analysis Ready"
+      platform: "GIS Survey"
+      category: "BOUNDARY"
+
+      group_id: "han_slope"
+      group_title: "Slope Stability"
+      group_description: "Slope-unit boundaries supporting the raster attributes."
+      group_keywords: ["AOI", "slope"]
+
+      providers:
+        - name: "NTU CompHydroMet Lab"
+          roles: ["host", "processor"]
+          url: "https://wangup.caece.net/"

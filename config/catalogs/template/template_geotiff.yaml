@@ -1,0 +1,71 @@
+metadata:
+  version: 1
+  description: "Lab Data Catalog Template (GeoTIFF / COG)"
+  # Tell the builder to use the raster generator for all sources in this catalog.
+  # Per-source override is also possible by putting `generator: raster` inside
+  # an individual source's metadata block.
+  generator: raster
+
+sources:
+  # -------------------------------------------------------------------------
+  # [TEMPLATE] GeoTIFF dataset entry
+  # Each file listed in asset_map becomes a separate STAC Item with one COG
+  # data asset. Use this layout when each raster carries a distinct variable
+  # (e.g. slope, aspect, NDVI) rather than a time series.
+  # -------------------------------------------------------------------------
+  my_raster_dataset:
+    description: "Short description of the dataset (e.g. Slope unit terrain attributes)"
+    driver: raster                       # Builder uses this to pick IntakeRasterGenerator
+
+    args:
+      # Directory containing the GeoTIFFs OR a glob pattern (e.g. "/data/*.tif").
+      urlpath: "/path/to/tiffs"
+
+      # If true, skip COG conversion and reference the original GeoTIFF.
+      skip_cog: false
+
+      # Optional: which asset_map key to render as the collection thumbnail.
+      # If omitted, the first asset is used.
+      thumbnail_asset_key: slope
+
+      # Map: source filename stem -> per-asset metadata.
+      # File matching: the *stem* (filename without .tif) must equal the key.
+      asset_map:
+        slope_unit:
+          key: slope                     # Asset key inside the STAC Item
+          title: "Slope Gradient"
+          description: "Slope in degrees, computed from a 20 m DEM."
+        aspect_unit:
+          key: aspect
+          title: "Slope Aspect"
+          description: "Aspect of each slope unit (0 = North)."
+
+    metadata:
+      # --- Basic identity ---
+      id: "my_raster_dataset_v1"
+      description: |
+        Long-form description of the raster dataset.
+        Markdown is supported (lists, links, emphasis).
+      keywords: ["terrain", "GeoTIFF", "raster"]
+      license: "proprietary"
+
+      # --- Optional explicit capture datetime (ISO 8601) ---
+      # If omitted, the current UTC time is used.
+      datetime: "2025-08-25T00:00:00Z"
+
+      # --- STAC summary fields ---
+      processing_level: "Analysis Ready"
+      platform: "Multi-source (DEM, InSAR, satellite)"
+      category: "TERRAIN"
+
+      # --- Grouping (used by the root catalog) ---
+      group_id: "han_slope"
+      group_title: "Slope Stability"
+      group_description: "Slope-unit raster attributes for landslide susceptibility."
+      group_keywords: ["landslide", "slope", "terrain"]
+
+      # --- Providers ---
+      providers:
+        - name: "NTU CompHydroMet Lab"
+          roles: ["host", "processor"]
+          url: "https://wangup.caece.net/"

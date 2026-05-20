@@ -1,0 +1,110 @@
+# ==============================================================================
+# INTAKE CATALOG FOR TABULAR STATION DATASETS (PARQUET FORMAT)
+# ==============================================================================
+# This catalog provides standardized access to meteorological station data
+# stored in efficient Parquet format for fast analytical processing.
+#
+# Template Version: 1.0
+# Last Updated: August 2025
+# ==============================================================================
+
+metadata:
+  version: 1
+  catalog_type: "station_data"
+  institution: "Climate Data Analysis Workshop"
+  license: "Educational Use"
+  description: "Meteorological station data in Parquet format"
+  references:
+    - "NOAA National Weather Service"
+    - "Pandas Documentation Examples"
+
+sources:
+  # Example 1: NYC Taxi Data (Common Dask/Parquet Example)
+  nyc_taxi_sample:
+    description: |
+      New York City Taxi Trip Data Sample
+      
+      This is a subset of the famous NYC taxi dataset, commonly used for 
+      demonstrating Parquet and Dask capabilities. The data contains taxi 
+      trip records with pickup/dropoff locations, times, and fare information.
+      
+      Data Variables:
+      - pickup_datetime: Trip start time
+      - dropoff_datetime: Trip end time  
+      - pickup_longitude, pickup_latitude: Pickup coordinates
+      - dropoff_longitude, dropoff_latitude: Dropoff coordinates
+      - passenger_count: Number of passengers
+      - trip_distance: Distance traveled (miles)
+      - fare_amount: Fare charged (USD)
+      - tip_amount: Tip amount (USD)
+      - total_amount: Total charge (USD)
+      
+      Format: Partitioned Parquet files
+      Size: ~100MB sample dataset
+      Time Range: 2015 sample data
+      Processing Level: Cleaned and preprocessed
+    
+    driver: parquet
+    
+    parameters:
+      columns:
+        description: "Columns to load (for memory efficiency)"
+        type: list
+        default: null
+      filters:
+        description: "Pandas query filters for data subset"
+        type: list  
+        default: null
+      
+    args:
+      urlpath: "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2015-01.parquet"
+      
+    metadata:
+      tags: ["transportation", "nyc", "taxi", "sample", "tutorial"]
+      data_type: "tabular"
+      domain: "transportation"
+      format: "parquet"
+      source: "NYC Taxi & Limousine Commission"
+      processing_level: "processed"
+      
+      usage_notes: |
+        - Classic example dataset for Parquet/Dask tutorials
+        - Use .read() for Pandas DataFrame or .to_dask() for Dask DataFrame
+        - Filter by date range for memory efficiency
+        - Contains coordinate data suitable for geospatial analysis
+      
+      example_code: |
+        import intake
+        
+        # Load catalog
+        catalog = intake.open_catalog('station_intake_catalog.yaml')
+        
+        # Load as Pandas DataFrame
+        df = catalog.nyc_taxi_sample.read()
+        
+        # Load as Dask DataFrame (for larger datasets)
+        ddf = catalog.nyc_taxi_sample.to_dask()
+        
+        # Load specific columns only
+        df_subset = catalog.nyc_taxi_sample.read(columns=['pickup_datetime', 'fare_amount'])
+
+
+# ==============================================================================
+# CATALOG USAGE EXAMPLES
+# ==============================================================================
+# 
+# Loading the catalog:
+#   import intake
+#   catalog = intake.open_catalog('station_intake_catalog.yaml')
+#   
+# List available datasets:
+#   list(catalog)
+#   
+# Get dataset information:
+#   catalog.nyc_taxi_sample.describe()
+#   
+# Load data:
+#   df = catalog.nyc_taxi_sample.read()  # Pandas DataFrame
+#   ddf = catalog.nyc_taxi_sample.to_dask()  # Dask DataFrame
+#
+# ==============================================================================

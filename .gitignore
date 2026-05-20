@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# uv
+.python-version
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build output (engine should not commit STAC artifacts)
+stac_catalog/
+stac_output/
+output/
+tests/output/
+
+# Local config overrides
+config/main.local.yaml
+*.local.yaml
+
+# Misc
+*.log

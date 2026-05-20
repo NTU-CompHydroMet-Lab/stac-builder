@@ -1,0 +1,139 @@
+metadata:
+  version: 1
+  description: "Lab Data Catalog Template (Zarr)"
+
+# =============================================================================
+# 📘 STAC CATALOG CONFIGURATION TEMPLATE (Team Standard)
+# =============================================================================
+# Purpose: Use this file as a starting point for adding new Zarr datasets.
+#
+# INSTRUCTIONS:
+# 1. Copy the 'my_dataset_name' block below.
+# 2. Rename it to a unique identifier (e.g., 'era5_hourly', 'gpm_daily').
+# 3. Fill in the fields marked [Required].
+# 4. Remove comments if desired, or keep them for reference.
+# =============================================================================
+
+sources:
+  # -------------------------------------------------------------------------
+  # [TEMPLATE] Dataset Entry
+  # Replace 'my_dataset_name' with a unique, valid Python identifier.
+  # -------------------------------------------------------------------------
+  my_dataset_name:
+    
+    # [Brief Description] 
+    # Short one-line summary. Shown in the 'stac explorer' list view.
+    description: "Short description (e.g. ERA5 Hourly Data)"
+    
+    # [Driver]
+    # 'zarr' is preferred for cloud-optimized access. 'netcdf' is also supported.
+    driver: zarr
+    
+    # [Args]
+    args:
+      # Path to data. Supports glob patterns (*.zarr, *.nc) and S3 (s3://).
+      # Example: /home/NAS/data/MyProject/*.zarr
+      urlpath: "/path/to/data/*.zarr"
+      
+      # Recommended for Zarr to speed up access (requires .zmetadata file)
+      consolidated: true
+      
+    # [Metadata] - The core STAC information
+    metadata:
+      # =======================================================================
+      # 1. CORE IDENTIFIERS (MUST FILL)
+      # =======================================================================
+      
+      # [Required] Unique ID for the STAC Collection. 
+      # Format: Lowercase, underscores only. No spaces. URL-safe.
+      id: "my_dataset_v1"        
+
+      # [Required] Category for Root Catalog grouping.
+      # Options: SATELLITE, RADAR, REANALYSIS, MODEL, OBSERVATION
+      category: "SATELLITE"
+
+      # =======================================================================
+      # 2. DATASET DETAILS (RECOMMENDED)
+      # =======================================================================
+
+      # [Optional] Processing Tier.
+      # - 'bronze': Raw data, original format.
+      # - 'silver': Calibrated, standardized, analysis-ready.
+      # - 'gold': Aggregated, derived products.
+      tier: "silver"
+
+      # [Optional] Source Metadata
+      source: "NASA"             # Agency / Origin
+      platform: "Satellite-Name" # Platform (GPM, Sentinel-2, etc.)
+      
+      # Ground Sample Distance (resolution in meters). 0.1 deg approx 10000m.
+      gsd: 10000                 
+      
+      # Processing Level (L1, L2, L3, analysis_ready)
+      processing_level: "analysis_ready"
+      
+      # Coordinate System (default: EPSG:4326 / WGS84)
+      coordinate_system: "WGS84" 
+
+      # =======================================================================
+      # 3. DESCRIPTIVE METADATA (MARKDOWN SUPPORTED)
+      # =======================================================================
+      # This text appears on the dataset's landing page.
+      description: |
+        ### General Description
+        Detailed description of the dataset goes here. 
+        You can use **Markdown** for formatting.
+        
+        **Methodology**:
+        Explain how the data was produced or processed...
+        
+        **Key Features**:
+        - Feature 1
+        - Feature 2
+        
+      # [Optional] Keywords/Tags for Search
+      # These tags appear in the STAC Browser and enable filtering.
+      keywords: ["precipitation", "satellite", "daily", "research"]
+
+      # =======================================================================
+      # 4. CITATION & LICENSE
+      # =======================================================================
+      
+      # [Optional] Scientific Citation
+      "sci:citation": "Author, A. et al. (Year). Title of Paper. Journal."
+      
+      # [Optional] Digital Object Identifier (DOI)
+      "sci:doi": "10.xxxx/yyyyy"
+      
+      # [Optional] Usage Rights
+      terms_of_use: "Data is available under [License Name] (e.g. CC-BY-4.0)."
+      
+      # =======================================================================
+      # 5. PROVIDERS (CREDITS)
+      # =======================================================================
+      # roles: 'producer' (creator), 'host' (server), 'processor' (code author)
+      providers:
+        - name: "Original Agency (e.g. NASA)"
+          roles: ["producer", "licensor"]
+          url: "https://agency.url/"
+        - name: "NTU CompHydroMet Lab"
+          roles: ["host"]
+          url: "https://wangup.caece.net/"
+        - name: "NTU CompHydroMet Lab (Code)"
+          roles: ["processor"]
+          url: "https://github.com/NTU-CompHydroMet-Lab"
+          
+      # =======================================================================
+      # 6. VISUALIZATION & RESOURCES
+      # =======================================================================
+      
+      # [Optional] Thumbnail Configuration
+      # Option A: Auto-generate from a variable (e.g., 'precipitation')
+      thumbnail_variable: "precipitation"
+      
+      # Option B: Use an existing image file (Overwrites Option A)
+      # thumbnail_path: "/path/to/custom_thumbnail.png"
+      
+      # [Optional] Example Notebook
+      # Absolute path to a Jupyter Notebook demonstrating usage.
+      example_notebook: "/path/to/notebooks/Showcase.ipynb"

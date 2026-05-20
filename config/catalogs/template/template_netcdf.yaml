@@ -1,0 +1,85 @@
+metadata:
+  version: 1
+  description: "Lab Data Catalog Template (NetCDF)"
+
+sources:
+  # -------------------------------------------------------------------------
+  # [TEMPLATE] Dataset Entry
+  # Replace 'my_dataset_name' with a unique, valid Python identifier
+  # -------------------------------------------------------------------------
+  my_dataset_name:
+    
+    # [Brief Description] 
+    description: "Short description of the dataset (e.g. ERA5 Hourly Data)"
+    
+    # [Driver]
+    # 'netcdf' is common for legacy weather data.
+    driver: netcdf
+    
+    # [Args]
+    args:
+      # Path to data. 
+      # supports glob patterns (*.nc, *.HDF5)
+      urlpath: "/path/to/data/*.nc"
+      # consolidated: true # NOT used for NetCDF
+      chunks: {}         # Optional: Chunking strategy for xarray
+      
+    # [Metadata] - The most important section for STAC generation
+    metadata:
+      # --- Basic Identity ---
+      id: "my_dataset_v1"        # Unique STAC Collection ID
+      tier: "silver"             # bronze (raw), silver (processed), gold (analysis-ready)
+      source: "NASA"             # Original data source / agency
+      platform: "Satellite-Name" # e.g., GPM, Sentinel-2, or 'Reanalysis'
+      gsd: 10000                 # Ground Sample Distance in meters (approx). 0.1deg ~ 10000m
+      processing_level: "L3"     # L1, L2, L3, etc.
+      coordinate_system: "WGS84" # EPSG:4326 usually
+      
+      # --- Rich Description (Markdown supported) ---
+      # detailed description for 'stac explorer' detail view
+      description: |
+        Detailed description of the dataset. 
+        You can include **bold text**, separate paragraphs, and links.
+        
+        **Methodology**:
+        Explain how the data was produced...
+        
+        **Known Issues**:
+        - Point 1
+        - Point 2
+      
+      # --- Scientific Extension (Optional but Recommended) ---
+      "sci:citation": "Author, A. et al. (Year). Title of Paper. Journal."
+      "sci:doi": "10.xxxx/yyyyy"
+      
+      # --- Access & Terms ---
+      terms_of_use: "Data is available under [License Name] (e.g. CC-BY-4.0)."
+      
+      # --- Providers (Credits) ---
+      # Roles: 
+      # - 'producer': Created the data (e.g. NASA)
+      # - 'licensor': Defines usage rights
+      # - 'host': Where the data is stored (e.g. NTU Lab Website)
+      # - 'processor': Who processed the codes (e.g. NTU Lab GitHub)
+      providers:
+        - name: "Original Agency Name (e.g. NASA)"
+          roles: ["producer", "licensor"]
+          url: "https://agency.url/"
+        - name: "NTU CompHydroMet Lab"
+          roles: ["host"]
+          url: "https://wangup.caece.net/"
+        - name: "NTU CompHydroMet Lab (Code)"
+          roles: ["processor"]
+          url: "https://github.com/NTU-CompHydroMet-Lab"
+          
+      # --- Visualization & Examples (New Features) ---
+      
+      # [Thumbnail]
+      # Variable to plot for the collection thumbnail (24h mean).
+      # MUST exist in the dataset variables.
+      thumbnail_variable: "precipitation"
+      
+      # [Example Notebook]
+      # Absolute path to a Jupyter Notebook demonstrating usage.
+      # Will be copied to 'assets' and linked in the collection.
+      example_notebook: "/path/to/notebooks/Showcase.ipynb"
