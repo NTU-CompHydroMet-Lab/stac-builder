@@ -12,6 +12,7 @@ dependencies = [
     # Catalog / IO
     "intake>=2.0.8",
     "intake-xarray>=2.0.0",
+    "jinja2>=3.1.6",
     "pyyaml>=6.0",
     # xarray ecosystem
     "xarray>=2025.12.0",
