@@ -25,6 +25,7 @@ from pydantic import BaseModel
 from rich.console import Console
 
 from src.core.builder import build_collection
+from src.core.describe import describe_catalog_file
 from src.core.preflight import PreflightReport, check_all, check_catalog_file
 from src.core.root_catalog import update_root_catalog
 from src.settings import get_settings
@@ -174,6 +175,25 @@ def validate(
     report = check_catalog_file(catalog, only_sources=only)
     _print_report(report)
     if not report.ok:
+        raise typer.Exit(code=2)
+
+
+# ---------------------------------------------------------------------------
+# describe
+# ---------------------------------------------------------------------------
+@app.command()
+def describe(
+    catalog: Annotated[Path, typer.Argument(help="Catalog YAML path to describe")],
+) -> None:
+    """Dry-run preview of what 'build' would produce.
+
+    Parses the catalog YAML without touching the data. Missing data files are
+    surfaced as warnings (not errors), so this is the right tool for planning
+    a catalog whose zarr/raster is still being processed.
+    """
+    result = describe_catalog_file(catalog)
+    console.print(result.format_text())
+    if result.errors:
         raise typer.Exit(code=2)
 
 

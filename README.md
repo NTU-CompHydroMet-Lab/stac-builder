@@ -94,7 +94,8 @@ deployment repos so they can decide base image, mount points, scheduling, etc.
 ```
 stac-builder build    --catalog catalogs/era5.yaml --source era5_east_asia \
                       --output stac_catalog
-stac-builder validate catalogs/era5.yaml
+stac-builder validate catalogs/era5.yaml      # preflight only, fail-fast
+stac-builder describe catalogs/himawari.yaml  # dry-run preview (data may be absent)
 stac-builder inspect  stac_catalog
 ```
 
@@ -124,8 +125,17 @@ log; the user must be able to fix everything in one round-trip.
 
 ### `validate`
 
-Run preflight on a catalog YAML only — no STAC output. Use this in CI or
-locally before pushing a new catalog.
+Run preflight on a catalog YAML only — no STAC output. Missing data is an
+**error** here. Use this in CI or right before a real build.
+
+### `describe`
+
+Parse a catalog YAML and print a structured preview of what `build` *would*
+produce — collection ids, expected output paths, thumbnail config, and which
+urlpaths are not yet present. Missing data is a **warning** here, not an
+error: this is the right tool when the YAML is written but the underlying
+zarr/raster is still being processed (e.g. a long-running Fortran pipeline).
+`describe` never writes STAC JSON; it is read-only.
 
 ### `inspect`
 
